@@ -184,6 +184,133 @@ print("Memory-bounded A* path from A to D:")
 print(sma_star(graph, 'A', 'D', heuristic))</code></pre>
 </details>
 
+
+  <details>
+  <summary>#13 Breadth-First Search (BFS)</summary>
+  <pre><code>from collections import deque
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([start])
+    while queue:
+        vertex = queue.popleft()
+        if vertex not in visited:
+            print(vertex, end=" ")
+            visited.add(vertex)
+            queue.extend([n for n in graph[vertex] if n not in visited])
+
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+print("BFS Traversal:")
+bfs(graph, 'A')</code></pre>
+</details>
+
+<details>
+  <summary>#14 Dijkstra's Algorithm</summary>
+  <pre><code>import heapq
+
+def dijkstra(graph, start):
+    queue = [(0, start)]
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+
+    while queue:
+        (cost, node) = heapq.heappop(queue)
+        for neighbor, weight in graph[node]:
+            new_cost = cost + weight
+            if new_cost &lt; distances[neighbor]:
+                distances[neighbor] = new_cost
+                heapq.heappush(queue, (new_cost, neighbor))
+    
+    return distances
+
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('C', 2), ('D', 5)],
+    'C': [('D', 1)],
+    'D': []
+}
+
+print("Shortest paths from A:")
+print(dijkstra(graph, 'A'))</code></pre>
+</details>
+
+<details>
+  <summary>#15 A* Search Algorithm</summary>
+  <pre><code>from heapq import heappop, heappush
+
+def a_star(graph, start, goal, h):
+    open_set = [(h[start], 0, start, [])]
+    visited = set()
+    
+    while open_set:
+        est_total, cost, node, path = heappop(open_set)
+        if node in visited:
+            continue
+        visited.add(node)
+        path = path + [node]
+
+        if node == goal:
+            return path
+        
+        for neighbor, weight in graph.get(node, []):
+            if neighbor not in visited:
+                heappush(open_set, (cost + weight + h[neighbor], cost + weight, neighbor, path))
+    return []
+
+graph = {
+    'A': [('B', 1), ('C', 3)],
+    'B': [('D', 1)],
+    'C': [('D', 1)],
+    'D': []
+}
+heuristic = {'A': 3, 'B': 1, 'C': 1, 'D': 0}
+
+print("A* path from A to D:")
+print(a_star(graph, 'A', 'D', heuristic))</code></pre>
+</details>
+
+<details>
+  <summary>#16 Memory Bounded A* (Simplified SMA*)</summary>
+  <pre><code>import heapq
+
+def sma_star(graph, start, goal, h, memory_limit=3):
+    open_list = [(h[start], 0, start, [])]
+    while open_list:
+        open_list.sort()
+        if len(open_list) > memory_limit:
+            open_list.pop()
+        
+        est_total, cost, node, path = open_list.pop(0)
+        path = path + [node]
+        
+        if node == goal:
+            return path
+
+        for neighbor, weight in graph.get(node, []):
+            if neighbor not in path:
+                heapq.heappush(open_list, (cost + weight + h[neighbor], cost + weight, neighbor, path))
+    return []
+
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('D', 2)],
+    'C': [('D', 1)],
+    'D': []
+}
+heuristic = {'A': 4, 'B': 2, 'C': 2, 'D': 0}
+
+print("Memory-bounded A* path from A to D:")
+print(sma_star(graph, 'A', 'D', heuristic))</code></pre>
+</details>
+
   <details>
     <summary>#3 Naive Bayes Classifier</summary>
     <pre><code>from sklearn.naive_bayes import GaussianNB
